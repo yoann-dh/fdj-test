@@ -1,0 +1,6 @@
+<fdj-sports-search-form (onSelectLeague)="onSelectedLeague($event)" [leagues]="leagues$ | async"></fdj-sports-search-form>
+<div class="flex flex-wrap">
+  <a class="w-1/4 p-4" *ngFor="let team of teams;" [routerLink]="['/team-finder', team._id]">
+    <img class="" [src]="team.thumbnail" [alt]="team.name">
+  </a>
+</div>

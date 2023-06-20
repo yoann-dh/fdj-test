@@ -1,0 +1,59 @@
+image: node:16
+
+stages:
+  - install
+  - test
+  - lint
+  - build
+  - publish
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+.distributed:
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+
+before_script:
+  - apt-get update && apt-get install -y curl
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+  - git fetch
+
+install:
+  extends: .distributed
+  stage: install
+  script:
+    - yarn install
+
+test:
+  extends: .distributed
+  stage: test
+  script:
+    - yarn nx affected:test --base=origin/main
+
+lint:
+  extends: .distributed
+  stage: lint
+  script:
+    - yarn nx affected:lint --base=origin/main
+
+build:
+  extends: .distributed
+  stage: build
+  script:
+    - yarn nx affected:build --base=origin/main
+
+publish:
+  stage: publish
+  image: docker:stable
+  services:
+    - docker:stable-dind
+  variables:
+    DOCKER_DRIVER: overlay2
+  script:
+    - docker login -u gitlab-ci-token --password-stdin registry.gitlab.com
+    - yarn install
+    - yarn nx affected --target=publish --base=origin/main --tag=$CI_COMMIT_SHA

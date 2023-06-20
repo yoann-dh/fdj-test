@@ -1,0 +1,14 @@
+http:
+  routers:
+    traefik:
+      rule: "Host(`traefik.fdj.local`)"
+      service: "api@internal"
+      tls:
+        domains:
+          - main: "fdj.local"
+            sans:
+              - "*.fdj.local"
+tls:
+  certificates:
+    - certFile: "/etc/traefik/certs/local-cert.pem"
+      keyFile: "/etc/traefik/certs/local-key.pem"

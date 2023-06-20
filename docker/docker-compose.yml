@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:2.9.4
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml
+      - ./traefik/certs:/etc/traefik/certs
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik=true
+    networks:
+      - fdj
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: fdj
+      MONGO_INITDB_ROOT_PASSWORD: fdjfdj
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongo:/data/db
+    networks:
+      - fdj
+
+  mongo-seed:
+    image: mongo
+    depends_on:
+      - mongo
+    volumes:
+      - ./dump:/dump
+    command: mongorestore --host mongo --db fdj --username fdj --password fdjfdj --authenticationDatabase admin /dump
+    networks:
+      - fdj
+
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    image: api
+    container_name: api
+    links:
+      - mongo
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGO_PASSWORD: fdjfdj
+      MONGO_USER: fdj
+      MONGO_HOST: mongo:27017
+      MONGO_DATABASE: fdj
+    depends_on:
+      - mongo
+    networks:
+      - fdj
+
+  paris-sport-front:
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.paris-sport-front.rule=Host(`fdj.local`)
+      - traefik.http.routers.paris-sport-front.tls=true
+    build:
+      context: ..
+      dockerfile: ./apps/paris-sport-front/Dockerfile
+    image: paris-sport-front
+    restart: unless-stopped
+    container_name: paris-sport-front
+    links:
+      - api
+    environment:
+      API_URL: 'http://api:3000'
+    networks:
+      - fdj
+
+volumes:
+  mongo-data:
+
+networks:
+  fdj:

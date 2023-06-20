@@ -1,0 +1,11 @@
+<div class="bg-white rounded-lg shadow-md p-4 w-full">
+  <div class="flex items-center">
+    <img [src]="player.thumbnail" alt="Image de {{ player.name }}" class="w-36 h-36 rounded-full">
+    <div class="ml-4">
+      <h2 class="text-md font-bold">{{ player.name }}</h2>
+      <p class="text-gray-600">Position: {{ player.position }}</p>
+      <p class="text-gray-600">Date de Naissance: {{ player.born | date:'yyyy-MM-dd' }}</p>
+      <p class="text-gray-600">Prix: {{ player.signin.amount | currency: player.signin.currency.toLocaleUpperCase()}} </p>
+    </div>
+  </div>
+</div>

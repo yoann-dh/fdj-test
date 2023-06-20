@@ -1,0 +1,20 @@
+<!-- search.component.html -->
+<div class="flex items-center">
+  <input
+    type="text"
+    class="p-2 border border-gray-300 rounded-md w-full"
+    placeholder="Rechercher..."
+    [(ngModel)]="searchQuery"
+    (input)="getSearchSuggestions()"
+  />
+</div>
+
+<ul class="mt-2">
+  <li
+    *ngFor="let suggestion of filteredSuggestions;"
+    class="p-2 border border-gray-300 rounded mt-1 bg-white"
+    (click)="selectSuggestion(suggestion)"
+  >
+    {{ suggestion.name }}
+  </li>
+</ul>

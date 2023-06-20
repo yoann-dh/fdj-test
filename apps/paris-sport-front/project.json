@@ -1,0 +1,152 @@
+{
+  "name": "paris-sport-front",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "fdj-sports",
+  "sourceRoot": "apps/paris-sport-front/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/paris-sport-front/browser",
+        "index": "apps/paris-sport-front/src/index.html",
+        "main": "apps/paris-sport-front/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "apps/paris-sport-front/tsconfig.app.json",
+        "assets": [
+          "apps/paris-sport-front/src/favicon.ico",
+          "apps/paris-sport-front/src/assets"
+        ],
+        "styles": ["apps/paris-sport-front/src/styles.scss"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "port": 4200,
+        "proxyConfig": "apps/paris-sport-front/proxy.conf.json"
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "paris-sport-front:build:production"
+        },
+        "development": {
+          "browserTarget": "paris-sport-front:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "paris-sport-front:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "apps/paris-sport-front/**/*.ts",
+          "apps/paris-sport-front/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/paris-sport-front/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "server": {
+      "dependsOn": ["build"],
+      "executor": "@angular-devkit/build-angular:server",
+      "options": {
+        "outputPath": "dist/apps/paris-sport-front/server",
+        "main": "apps/paris-sport-front/server.ts",
+        "tsConfig": "apps/paris-sport-front/tsconfig.server.json"
+      },
+      "configurations": {
+        "production": {
+          "outputHashing": "media"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "sourceMap": true,
+          "extractLicenses": false,
+          "vendorChunk": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve-ssr": {
+      "executor": "@nguniversal/builders:ssr-dev-server",
+      "configurations": {
+        "development": {
+          "browserTarget": "paris-sport-front:build:development",
+          "serverTarget": "paris-sport-front:server:development"
+        },
+        "production": {
+          "browserTarget": "paris-sport-front:build:production",
+          "serverTarget": "paris-sport-front:server:production"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "prerender": {
+      "executor": "@nguniversal/builders:prerender",
+      "options": {
+        "routes": ["/"]
+      },
+      "configurations": {
+        "development": {
+          "browserTarget": "paris-sport-front:build:development",
+          "serverTarget": "paris-sport-front:server:development"
+        },
+        "production": {
+          "browserTarget": "paris-sport-front:build:production",
+          "serverTarget": "paris-sport-front:server:production"
+        }
+      },
+      "defaultConfiguration": "production"
+    }
+  }
+}
